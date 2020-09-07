@@ -1,0 +1,41 @@
+Create a VPC network and firewall rules
+
+create vpc network
+gcloud compute networks create privatenet --project=qwiklabs-gcp-03-5f7d3a2a89b4 --subnet-mode=custom --bgp-routing-mode=regional
+
+gcloud compute networks subnets create privatenet-us --project=qwiklabs-gcp-03-5f7d3a2a89b4 --range=10.130.0.0/20 --network=privatenet --region=us-central1
+
+Firewall
+gcloud compute --project=qwiklabs-gcp-03-5f7d3a2a89b4 firewall-rules create privatenet-allow-ssh --direction=INGRESS --priority=1000 --network=privatenet --action=ALLOW --rules=tcp:22 --source-ranges=35.235.240.0/20
+
+Create the VM instance with no public IP address
+
+gcloud beta compute --project=qwiklabs-gcp-03-5f7d3a2a89b4 instances create vm-internal --zone=us-central1-c --machine-type=n1-standard-1 --subnet=privatenet-us --no-address --maintenance-policy=MIGRATE --service-account=1044292979317-compute@developer.gserviceaccount.com --scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append --image=debian-9-stretch-v20200902 --image-project=debian-cloud --boot-disk-size=10GB --boot-disk-type=pd-standard --boot-disk-device-name=vm-internal --reservation-affinity=any
+
+SSH to vm-internal to test the IAP tunnel
+gcloud compute ssh vm-internal --zone us-central1-c --tunnel-through-iap
+
+test the external connectivity of vm-internal
+ping -c 2 www.google.com
+
+Create a Cloud Storage bucket
+find out Cmd
+
+copy and image file into my bucket
+gsutil cp gs://cloud-training/gcpnet/private/access.svg gs://storagebucket101
+
+SSH to vm-internal to test the IAP tunnel
+gcloud compute ssh vm-internal --zone us-central1-c --tunnel-through-iap
+
+In Cloud Shell, copy the image from my bucket
+gsutil cp gs://storagebucket101/*.svg .
+
+To connect to vm-internal,
+gcloud compute ssh vm-internal --zone us-central1-c --tunnel-through-iap
+
+Enable Private Google Access on firewall 
+
+must find command
+
+update the VM instances
+sudo apt-get update
