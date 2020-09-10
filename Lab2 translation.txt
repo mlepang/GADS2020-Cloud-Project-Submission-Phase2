@@ -1,0 +1,29 @@
+
+
+Create an application
+
+mkdir appengine-hello
+cd appengine-hello
+gsutil cp gs://cloud-training/archinfra/gae-hello/* .
+
+dev_appserver.py $(pwd)
+
+once completed click "Ctrl+C" to exit
+
+to Deploy the application to App Engine
+
+gcloud app deploy app.yaml
+
+verification that the application working
+
+gcloud app browse
+
+Introduce an error to break the application
+cat main.py
+
+use the sed stream editor to change the import library to the nonexistent webapp22
+sed -i -e 's/webapp2/webapp22/' main.py
+
+Re-deploy the application to App Engine
+gcloud app deploy app.yaml --quiet
+
